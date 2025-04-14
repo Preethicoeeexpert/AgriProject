@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPK Data Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #00bfa6;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .graph-container {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .graph-container h2 {
+            color: #00bfa6;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+            margin: 0 auto;
+        }
+
+        .value-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        #nitrogenValue { color: #42a5f5; }
+        #phosphorusValue { color: #ffa726; }
+        #potassiumValue { color: #66bb6a; }
+
+        .navbar {
+            background-color: #1e1e1e;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logout-btn {
+            float: right;
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('home') }}" class="logout-btn">Logout</a>
+    </div>
+    
+    <h1>Real-Time NPK Data Monitoring</h1>
+
+    <div class="dashboard-grid">
+        <div class="graph-container">
+            <h2>Nitrogen (N)</h2>
+            <div class="value-display" id="nitrogenValue">Loading...</div>
+            <canvas id="nitrogenChart"></canvas>
+        </div>
+
+        <div class="graph-container">
+            <h2>Phosphorus (P)</h2>
+            <div class="value-display" id="phosphorusValue">Loading...</div>
+            <canvas id="phosphorusChart"></canvas>
+        </div>
+
+        <div class="graph-container">
+            <h2>Potassium (K)</h2>
+            <div class="value-display" id="potassiumValue">Loading...</div>
+            <canvas id="potassiumChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Socket connected:', socket.connected);
+        });
+
+        // Chart configuration
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e0e0e0'
+                    }
+                }
+            },
+            scales: {
+                x: { 
+                    grid: {
+                        color: '#333333'
+                    },
+                    ticks: {
+                        color: '#e0e0e0'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: '#333333'
+                    },
+                    ticks: {
+                        color: '#e0e0e0'
+                    }
+                }
+            }
+        };
+
+        // Initialize charts
+        const nitrogenChart = new Chart(document.getElementById('nitrogenChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Nitrogen (N)',
+                    data: [],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66, 165, 245, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: chartConfig
+        });
+
+        const phosphorusChart = new Chart(document.getElementById('phosphorusChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Phosphorus (P)',
+                    data: [],
+                    borderColor: '#ffa726',
+                    backgroundColor: 'rgba(255, 167, 38, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: chartConfig
+        });
+
+        const potassiumChart = new Chart(document.getElementById('potassiumChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Potassium (K)',
+                    data: [],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102, 187, 106, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: chartConfig
+        });
+
+        // Update the charts and HTML with real-time data
+        socket.on('dataUpdate', (data) => {
+            console.log('Frontend received data:', data);
+            
+            // Update HTML Values
+            document.getElementById('nitrogenValue').textContent = 
+                data.nitrogen ? data.nitrogen.toFixed(2) : 'N/A';
+            document.getElementById('phosphorusValue').textContent = 
+                data.phosphorus ? data.phosphorus.toFixed(2) : 'N/A';
+            document.getElementById('potassiumValue').textContent = 
+                data.potassium ? data.potassium.toFixed(2) : 'N/A';
+
+            // Get current time for x-axis
+            const currentTime = new Date().toLocaleTimeString();
+
+            try {
+                // Update Nitrogen Chart
+                nitrogenChart.data.labels.push(currentTime);
+                nitrogenChart.data.datasets[0].data.push(data.nitrogen || 0);
+                if (nitrogenChart.data.labels.length > 20) {
+                    nitrogenChart.data.labels.shift();
+                    nitrogenChart.data.datasets[0].data.shift();
+                }
+                nitrogenChart.update();
+
+                // Update Phosphorus Chart
+                phosphorusChart.data.labels.push(currentTime);
+                phosphorusChart.data.datasets[0].data.push(data.phosphorus || 0);
+                if (phosphorusChart.data.labels.length > 20) {
+                    phosphorusChart.data.labels.shift();
+                    phosphorusChart.data.datasets[0].data.shift();
+                }
+                phosphorusChart.update();
+
+                // Update Potassium Chart
+                potassiumChart.data.labels.push(currentTime);
+                potassiumChart.data.datasets[0].data.push(data.potassium || 0);
+                if (potassiumChart.data.labels.length > 20) {
+                    potassiumChart.data.labels.shift();
+                    potassiumChart.data.datasets[0].data.shift();
+                }
+                potassiumChart.update();
+            } catch (error) {
+                console.error('Error updating charts:', error);
+            }
+        });
+    </script>
+</body>
+</html>

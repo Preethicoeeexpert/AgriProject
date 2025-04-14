@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPK Data Visualization</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #00bfa6;
+      text-align: center;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .graph-container {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .graph-container h2 {
+      color: #00bfa6;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 300px !important;
+      margin: 0 auto;
+    }
+
+    .value-display {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #ffffff;
+      margin: 10px 0;
+    }
+
+    #nitrogenValue { color: #42a5f5; }
+    #phosphorusValue { color: #ffa726; }
+    #potassiumValue { color: #66bb6a; }
+  </style>
+</head>
+<body>
+  <h1>Real-Time NPK Data Monitoring</h1>
+
+  <div class="dashboard-grid">
+    <div class="graph-container">
+      <h2>Nitrogen (N)</h2>
+      <div class="value-display" id="nitrogenValue">Loading...</div>
+      <canvas id="nitrogenChart"></canvas>
+    </div>
+
+    <div class="graph-container">
+      <h2>Phosphorus (P)</h2>
+      <div class="value-display" id="phosphorusValue">Loading...</div>
+      <canvas id="phosphorusChart"></canvas>
+    </div>
+
+    <div class="graph-container">
+      <h2>Potassium (K)</h2>
+      <div class="value-display" id="potassiumValue">Loading...</div>
+      <canvas id="potassiumChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const socket = io(); // Connect to the WebSocket server
+
+    socket.on('connect', () => {
+      console.log('Socket connected:', socket.connected);
+    });
+
+    const chartConfig = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#e0e0e0'
+          }
+        }
+      },
+      scales: {
+        x: { 
+          grid: {
+            color: '#333333'
+          },
+          ticks: {
+            color: '#e0e0e0'
+          },
+          title: { 
+            display: true, 
+            text: 'Time',
+            color: '#e0e0e0'
+          }
+        },
+        y: {
+          grid: {
+            color: '#333333'
+          },
+          ticks: {
+            color: '#e0e0e0'
+          },
+          title: { 
+            display: true, 
+            text: 'Value',
+            color: '#e0e0e0'
+          }
+        }
+      }
+    };
+
+    // Chart.js configurations for individual graphs
+    const nitrogenCtx = document.getElementById('nitrogenChart').getContext('2d');
+    const phosphorusCtx = document.getElementById('phosphorusChart').getContext('2d');
+    const potassiumCtx = document.getElementById('potassiumChart').getContext('2d');
+
+    const nitrogenChart = new Chart(nitrogenCtx, {
+      type: 'line',
+      data: {
+        labels: [], // Time labels
+        datasets: [{
+          label: 'Nitrogen (N)',
+          data: [],
+          borderColor: '#42a5f5',
+          backgroundColor: 'rgba(66, 165, 245, 0.2)',
+          borderWidth: 2,
+          fill: true
+        }],
+      },
+      options: {
+        ...chartConfig,
+        scales: {
+          ...chartConfig.scales,
+          y: {
+            ...chartConfig.scales.y,
+            title: { 
+              display: true, 
+              text: 'Nitrogen Value',
+              color: '#e0e0e0'
+            }
+          }
+        }
+      },
+    });
+
+    const phosphorusChart = new Chart(phosphorusCtx, {
+      type: 'line',
+      data: {
+        labels: [], // Time labels
+        datasets: [{
+          label: 'Phosphorus (P)',
+          data: [],
+          borderColor: '#ffa726',
+          backgroundColor: 'rgba(255, 167, 38, 0.2)',
+          borderWidth: 2,
+          fill: true
+        }],
+      },
+      options: {
+        ...chartConfig,
+        scales: {
+          ...chartConfig.scales,
+          y: {
+            ...chartConfig.scales.y,
+            title: { 
+              display: true, 
+              text: 'Phosphorus Value',
+              color: '#e0e0e0'
+            }
+          }
+        }
+      },
+    });
+
+    const potassiumChart = new Chart(potassiumCtx, {
+      type: 'line',
+      data: {
+        labels: [], // Time labels
+        datasets: [{
+          label: 'Potassium (K)',
+          data: [],
+          borderColor: '#66bb6a',
+          backgroundColor: 'rgba(102, 187, 106, 0.2)',
+          borderWidth: 2,
+          fill: true
+        }],
+      },
+      options: {
+        ...chartConfig,
+        scales: {
+          ...chartConfig.scales,
+          y: {
+            ...chartConfig.scales.y,
+            title: { 
+              display: true, 
+              text: 'Potassium Value',
+              color: '#e0e0e0'
+            }
+          }
+        }
+      },
+    });
+
+    // Update the charts and HTML with real-time data
+    socket.on('dataUpdate', (data) => {
+      console.log('Frontend received data:', data);
+      
+      // Update HTML Values first
+      document.getElementById('nitrogenValue').textContent = 
+        data.nitrogen ? data.nitrogen.toFixed(2) : 'N/A';
+      document.getElementById('phosphorusValue').textContent = 
+        data.phosphorus ? data.phosphorus.toFixed(2) : 'N/A';
+      document.getElementById('potassiumValue').textContent = 
+        data.potassium ? data.potassium.toFixed(2) : 'N/A';
+
+      // Get current time for x-axis
+      const currentTime = new Date().toLocaleTimeString();
+
+      // Update charts with proper error handling
+      try {
+        // Update Nitrogen Chart
+        if (nitrogenChart && nitrogenChart.data) {
+          nitrogenChart.data.labels.push(currentTime);
+          nitrogenChart.data.datasets[0].data.push(data.nitrogen || 0);
+          if (nitrogenChart.data.labels.length > 20) {
+            nitrogenChart.data.labels.shift();
+            nitrogenChart.data.datasets[0].data.shift();
+          }
+          nitrogenChart.update();
+        }
+
+        // Update Phosphorus Chart
+        if (phosphorusChart && phosphorusChart.data) {
+          phosphorusChart.data.labels.push(currentTime);
+          phosphorusChart.data.datasets[0].data.push(data.phosphorus || 0);
+          if (phosphorusChart.data.labels.length > 20) {
+            phosphorusChart.data.labels.shift();
+            phosphorusChart.data.datasets[0].data.shift();
+          }
+          phosphorusChart.update();
+        }
+
+        // Update Potassium Chart
+        if (potassiumChart && potassiumChart.data) {
+          potassiumChart.data.labels.push(currentTime);
+          potassiumChart.data.datasets[0].data.push(data.potassium || 0);
+          if (potassiumChart.data.labels.length > 20) {
+            potassiumChart.data.labels.shift();
+            potassiumChart.data.datasets[0].data.shift();
+          }
+          potassiumChart.update();
+        }
+      } catch (error) {
+        console.error('Error updating charts:', error);
+      }
+    });
+  </script>
+</body>
+</html>

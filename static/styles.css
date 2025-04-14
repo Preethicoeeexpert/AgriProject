@@ -1,0 +1,162 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    scroll-behavior: smooth;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px 50px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 15px;
+    font-size: 18px;
+    padding: 12px;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.logo-container span {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+/* Hero Section with Background Image */
+.hero {
+    background: url('../static/image.jpg') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    padding: 20px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    max-width: 800px;
+    line-height: 1.5;
+}
+
+.explore-btn {
+    background-color: #4CAF50;
+    padding: 14px 30px;
+    font-size: 20px;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s ease-in-out;
+    font-weight: bold;
+}
+
+.explore-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+/* About Section */
+#about {
+    padding: 60px 20px;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+#about h2 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+#about p {
+    font-size: 1.3rem;
+    max-width: 900px;
+    margin: 15px auto;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Team Section */
+#team {
+    padding: 60px 20px;
+    background-color: white;
+    text-align: center;
+}
+
+#team h2 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+#team p {
+    font-size: 1.3rem;
+    color: #555;
+    max-width: 900px;
+    margin: 15px auto;
+    line-height: 1.6;
+}
+
+/* Footer */
+footer {
+    background-color: #222;
+    color: white;
+    padding: 25px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+footer a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 15px;
+    transition: 0.3s;
+}
+
+footer a:hover {
+    text-decoration: underline;
+    color: #3e8e41;
+}

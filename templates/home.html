@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Agriculture - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .crop-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .crop {
+            text-align: center;
+            cursor: pointer;
+        }
+        .crop img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .form-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+            <span>Smart Agriculture</span>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('register') }}">Signup</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </div>
+    </div>
+
+    <!-- Hero Section with Background Image -->
+    <div class="hero">
+        <h1>Welcome to Smart Agriculture</h1>
+        <p>Revolutionizing farming with technology to improve productivity and sustainability.</p>
+        <a href="/field-selection" class="explore-btn">Xplore</a>
+    </div>
+
+    <!-- Website Description Section -->
+    <section id="about">
+        <h2>About Our Project</h2>
+        <p>Our smart agriculture system helps farmers monitor soil health, optimize irrigation, and boost crop yield using real-time data and IoT technology.</p>
+        <p>With automated sensors and AI-driven insights, we empower farmers to make informed decisions, reducing resource wastage and increasing efficiency.</p>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="container mt-5 text-center">
+        <h2 class="mb-4">Meet Our Team</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-md-4 col-sm-6 team-member">
+                <h4>Preethi S</h4>
+                <p>Project Lead</p>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 team-member">
+                <h4>Swetha T</h4>
+                <p>Front end developer</p>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 team-member">
+                <h4>Yashifa J</h4>
+                <p>AI Specialist</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Contact us: info@smartagriculture.com | Phone: +91 98765 43210</p>
+        <p>Follow us on:
+            <a href="#">Facebook</a> |
+            <a href="#">Twitter</a> |
+            <a href="#">Instagram</a>
+        </p>
+    </footer>
+</body>
+</html>
+
+<!-- New Page for Field Selection -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Selection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .crop-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .crop {
+            text-align: center;
+            cursor: pointer;
+        }
+        .crop img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .form-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Field Selection</h2>
+        <form action="/submit-field" method="POST">
+            <label for="field-id">Enter Field ID:</label>
+            <input type="text" id="field-id" name="field-id" placeholder="Enter your field ID..." required>
+
+            <h3>Select Plants:</h3>
+            <div class="crop-selection">
+                <div class="crop">
+                    <img src="/static/images/tomato.png" alt="Tomato">
+                    <p>Tomato</p>
+                </div>
+                <div class="crop">
+                    <img src="/static/images/red_chilli.png" alt="Red Chilli">
+                    <p>Red Chilli</p>
+                </div>
+                <div class="crop">
+                    <img src="/static/images/green_chilli.png" alt="Green Chilli">
+                    <p>Green Chilli</p>
+                </div>
+                <div class="crop">
+                    <img src="/static/images/maize.png" alt="Maize">
+                    <p>Maize</p>
+                </div>
+                <!-- Add more plants here -->
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
